@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-00v_eb61(oe0o@h-kxz26bdsi39d$n5!y%^@2ys-$byu_+l0to
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '7139-2401-4900-1c33-7ceb-f445-907c-3448-e0ea.ngrok-free.app',
+    '127.0.0.1',
+    '248c-2401-4900-1c33-7ceb-f445-907c-3448-e0ea.ngrok-free.app',
     'localhost'
 ]
 
@@ -39,9 +40,28 @@ REST_FRAMEWORK = {
     )
 }
 
+#Daphne
+ASGI_APPLICATION = 'core.asgi.application'
+
+# Channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+#Thumbnail uploads
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'rest_framework',
     'rest_framework_simplejwt',
 
     'django.contrib.admin',

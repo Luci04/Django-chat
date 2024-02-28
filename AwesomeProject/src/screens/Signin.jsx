@@ -15,6 +15,7 @@ import {Button} from '../assets/common/Button';
 import api from '../core/api';
 import log from '../core/utils';
 import useGlobal from '../core/global';
+import utils from '../core/utils';
 
 const Signin = ({navigation}) => {
   const [userName, setuserName] = useState('avinash');
@@ -39,8 +40,13 @@ const Signin = ({navigation}) => {
       },
     })
       .then(response => {
-        log('SignIn :', response.data);
-        login(response.data);
+        const cred = {
+          username: userName,
+          password,
+        };
+
+        utils.log('SignIn :', response.data);
+        login(response.data.user, cred, response.data.tokens);
       })
       .catch(error => {
         if (error.response) {

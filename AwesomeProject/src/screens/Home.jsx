@@ -6,17 +6,37 @@ import {
   PanResponder,
   Image,
 } from 'react-native';
-import React, {useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Requests from './Requests';
 import Friends from './Friends';
 import Profile from './Profile';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
+import useGlobal from '../core/global';
+import utils from '../core/utils';
 
 const Tab = createBottomTabNavigator();
 
 const Home = ({navigation}) => {
+  const socketConnect = useGlobal(state => state.socketConnect);
+  const socketClose = useGlobal(state => state.socketClose);
+  const user = useGlobal(state => state.user);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, []);
+
+  useEffect(() => {
+    socketConnect();
+
+    return () => {
+      socketClose();
+    };
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={({route, navigation}) => ({
@@ -31,7 +51,7 @@ const Home = ({navigation}) => {
                   backgroundColor: '#e0e0e0',
                 }}
                 source={{
-                  uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                  uri: utils.thumbnail(user.thumbnail),
                 }}
               />
             </View>

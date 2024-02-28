@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Splash from './src/screens/Splash';
 import {StatusBar, StyleSheet} from 'react-native';
@@ -20,9 +20,13 @@ const Stack = createNativeStackNavigator();
 import useGlobal from './src/core/global';
 
 function App() {
-  const [intialized] = useState(true);
-
+  const initialized = useGlobal(state => state.initialized);
   const authenticated = useGlobal(state => state.authenticated);
+  const init = useGlobal(state => state.init);
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <NavigationContainer>
@@ -31,7 +35,7 @@ function App() {
         screenOptions={{
           headerShown: false,
         }}>
-        {!intialized ? (
+        {!initialized ? (
           <>
             <Stack.Screen name="Splash" component={Splash} />
           </>
