@@ -13,6 +13,7 @@ import {Button} from '../assets/common/Button';
 import api from '../core/api';
 import log from '../core/utils';
 import useGlobal from '../core/global';
+import utils from '../core/utils';
 
 const Signup = ({navigation}) => {
   const [userName, setUserName] = useState('');
@@ -42,8 +43,16 @@ const Signup = ({navigation}) => {
       },
     })
       .then(response => {
-        log('Signup', response.data);
-        login(response.data);
+        utils.log('Signup', response.data);
+
+        const credentials = {
+          username: userName,
+          password,
+        };
+
+        const tokens = response.data.tokens;
+
+        login(response.data.user, credentials, tokens);
       })
       .catch(error => {
         if (error.response) {

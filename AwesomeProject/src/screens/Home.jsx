@@ -59,7 +59,7 @@ const Home = ({navigation}) => {
         },
 
         headerRight: () => (
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
             <Entypo
               style={{
                 marginRight: 16,
