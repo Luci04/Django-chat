@@ -55,3 +55,19 @@ class UserSerializers(serializers.ModelSerializer):
         fname = obj.first_name.capitalize()
         lname = obj.last_name.capitalize()
         return fname + ' ' + lname
+
+class SearchSerializer(UserSerializers):
+    status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'name',
+            'thumbnail',
+            'status'
+        ]
+    
+    def get_status(self,obj):
+        return 'no-connection'
+    

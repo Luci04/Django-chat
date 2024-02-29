@@ -3,8 +3,9 @@ import base64
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.core.files.base import ContentFile
-
-from .serializers import UserSerializers
+from .models import User
+from .serializers import UserSerializers,SearchSerializer
+from django.db.models import Q
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -34,12 +35,39 @@ class ChatConsumer(WebsocketConsumer):
         data = json.loads(text_data)
         data_source = data.get('source')
 
-        # print('receive',json.dumps(data,indent=1))
+        print('receive',json.dumps(data,indent=1))
+
+        #Seach / filter Users
+        if data_source == 'search':
+            self.receive_search(data)
 
         #Thumbnail
-        if data_source == 'thumbnail':
+        elif data_source == 'thumbnail':
             self.receive_thumbnail(data)
-    
+
+    def receive_search(self,data):
+        query = data.get('query')
+        # get user from query search term
+        users = User.objects.filter(
+            Q(username__istartswith=query) |
+            Q(first_name__istartswith=query) |
+            Q(last_name__istartswith=query) 
+        ).exclude(
+            username=self.username
+        )
+        # .annotate(
+        #     pending_them=Exists(
+        #         Connection
+        #     )
+        #     pending_me=...
+        #     connected=...
+        # )
+
+        #serialize results
+
+        serialized = SearchSerializer(users,many=True)
+        # Send updated user data including new thumbnail
+        self.send_group(self.username,'search',serialized.data)
 
     def receive_thumbnail(self,data):
         user = self.scope['user']
